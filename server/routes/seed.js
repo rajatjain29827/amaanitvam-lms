@@ -2,19 +2,24 @@ import express from 'express';
 import User from '../models/User.js';
 import Course from '../models/Course.js';
 import Lesson from '../models/Lesson.js';
+import Enrollment from '../models/Enrollment.js';
+import Progress from '../models/Progress.js';
 import Quiz from '../models/Quiz.js';
+import QuizAttempt from '../models/QuizAttempt.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const userCount = await User.countDocuments();
-    if (userCount > 0) {
-      return res.status(400).json({
-        message: 'Database already has data. Clear your MongoDB collection first if you want to re-seed.',
-        hint: 'Drop the database from MongoDB Atlas and try again.',
-      });
-    }
+    await Promise.all([
+      User.deleteMany({}),
+      Course.deleteMany({}),
+      Lesson.deleteMany({}),
+      Enrollment.deleteMany({}),
+      Progress.deleteMany({}),
+      Quiz.deleteMany({}),
+      QuizAttempt.deleteMany({}),
+    ]);
 
     const admin = await User.create({
       name: 'Admin User',
