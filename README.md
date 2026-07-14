@@ -85,39 +85,42 @@ lms/
 - Render account (free tier)
 - Vercel account (free tier)
 
-### Deploy Backend (Render)
+### Deploy to Render (Free - Single Service)
 1. Push code to GitHub
-2. Create a new Web Service on Render
-3. Connect your GitHub repository
-4. Set root directory to `server`
-5. Set build command: `npm install`
-6. Set start command: `npm start`
-7. Add environment variables:
-   - `MONGO_URI` - Your MongoDB Atlas connection string
-   - `JWT_SECRET` - Any secure string
-8. Deploy
+2. Go to https://render.com → Sign up with GitHub
+3. Click **New +** → **Web Service**
+4. Connect your GitHub repository
+5. Configure:
+   - **Name:** `amaanitvam-lms`
+   - **Root Directory:** (leave blank - use repo root)
+   - **Runtime:** Node
+   - **Build Command:** `npm install && npm run build`
+   - **Start Command:** `npm start`
+   - **Plan:** Free
+6. Add environment variables:
+   - `MONGO_URI` — Your MongoDB Atlas connection string
+   - `JWT_SECRET` — Any random string (e.g., `mysecret123`)
+7. Click **Deploy Web Service**
+8. Wait ~5 minutes for build & deploy
+9. Your app is live at `https://amaanitvam-lms.onrender.com`
 
-### Deploy Frontend (Vercel)
-1. Push code to GitHub
-2. Import repository in Vercel
-3. Set root directory to `client`
-4. Set build command: `npm run build`
-5. Set output directory: `dist`
-6. Add environment variable:
-   - `VITE_API_URL` - Your Render backend URL
-7. Deploy
+### Seed Sample Data
+After deploying, in Render dashboard → **Shell** tab:
+```bash
+cd server && node seed.js
+```
 
 ### Local Development
 ```bash
-# Install dependencies
-cd server && npm install
-cd ../client && npm install
+# Install dependencies (from root)
+cd client && npm install
+cd ../server && npm install
 
-# Start backend (from server directory)
-npm run dev
+# Start backend (from root)
+cd server && npm run dev
 
-# Start frontend (from client directory)
-npm run dev
+# Start frontend (from root, separate terminal)
+cd client && npm run dev
 
 # Backend: http://localhost:5000
 # Frontend: http://localhost:3000
