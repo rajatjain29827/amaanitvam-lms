@@ -82,12 +82,71 @@ export default function Home() {
               setSeeding(true);
               setSeedResult(null);
               try {
-                const { data } = await api.get('/seed');
-                setSeedResult(data);
+                const accounts = [
+                  { name: 'Admin User', email: 'admin@lms.com', password: 'password123', role: 'admin' },
+                  { name: 'John Instructor', email: 'instructor@lms.com', password: 'password123', role: 'instructor' },
+                  { name: 'Jane Student', email: 'student@lms.com', password: 'password123', role: 'student' },
+                ];
+                for (const acc of accounts) {
+                  await api.post('/auth/register', acc).catch(() => {});
+                }
+                const instRes = await api.post('/auth/login', {
+                  email: 'instructor@lms.com', password: 'password123',
+                });
+                const instToken = instRes.data.token;
+                const prevToken = localStorage.getItem('token');
+                localStorage.setItem('token', instToken);
+                const courseData = [
+                  { title: 'Introduction to Web Development', description: 'Learn HTML, CSS, and JavaScript fundamentals. Build your first website from scratch.', category: 'Web Development', price: 0, published: true },
+                  { title: 'Python Programming Masterclass', description: 'Comprehensive Python course from basics to OOP, APIs, and data structures.', category: 'Programming', price: 49.99, published: true },
+                  { title: 'Data Science & Machine Learning', description: 'Learn pandas, numpy, matplotlib, and build ML models with scikit-learn.', category: 'Data Science', price: 79.99, published: true },
+                  { title: 'React.js for Beginners', description: 'Master React components, hooks, state management, routing, and real-world apps.', category: 'Web Development', price: 39.99, published: true },
+                ];
+                const courses = [];
+                for (const cd of courseData) {
+                  const { data: course } = await api.post('/courses', cd);
+                  courses.push(course);
+                  for (let i = 1; i <= 4; i++) {
+                    await api.post(`/courses/${course._id}/lessons`, {
+                      title: `${cd.title.split(' ').slice(0, 2).join(' ')} - Lesson ${i}`,
+                      content: `Lesson ${i} of "${cd.title}".\n\nCore concepts overview.\nPractical examples.\nHands-on exercises.`,
+                      duration: `${10 + i * 5}:00`,
+                    });
+                  }
+                  await api.post(`/courses/${course._id}/quizzes`, {
+                    title: `${cd.title} - Quiz`,
+                    questions: [
+                      { question: 'What is the primary purpose of this course?', options: ['Entertainment', 'Education and skill building', 'Gaming', 'Social networking'], correctAnswer: 1 },
+                      { question: 'How should you approach the exercises?', options: ['Skip them', 'Only read', 'Practice hands-on', 'Watch only'], correctAnswer: 2 },
+                      { question: 'What is the recommended learning method?', options: ['Cramming', 'Consistent practice', 'Only theory', 'Memorization'], correctAnswer: 1 },
+                    ],
+                  });
+                }
+                if (prevToken) { localStorage.setItem('token', prevToken); } else { localStorage.removeItem('token'); }
                 const { data: coursesData } = await api.get('/courses');
                 setCourses(coursesData.slice(0, 6));
+                setSeedResult({
+                  message: 'Demo data created successfully!',
+                  accounts: {
+                    admin: { email: 'admin@lms.com', password: 'password123' },
+                    instructor: { email: 'instructor@lms.com', password: 'password123' },
+                    student: { email: 'student@lms.com', password: 'password123' },
+                  },
+                });
               } catch (err) {
-                setSeedResult({ error: err.response?.data?.message || 'Failed to seed' });
+                const msg = err.response?.data?.message || err.message || 'Failed';
+                if (msg.includes('already exists')) {
+                  setSeedResult({
+                    message: 'Demo accounts already exist! Try logging in.',
+                    accounts: {
+                      admin: { email: 'admin@lms.com', password: 'password123' },
+                      instructor: { email: 'instructor@lms.com', password: 'password123' },
+                      student: { email: 'student@lms.com', password: 'password123' },
+                    },
+                  });
+                } else {
+                  setSeedResult({ error: msg });
+                }
               } finally {
                 setSeeding(false);
               }
