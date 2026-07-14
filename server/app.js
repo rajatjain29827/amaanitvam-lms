@@ -9,6 +9,7 @@ import lessonRoutes from './routes/lessons.js';
 import enrollmentRoutes from './routes/enrollments.js';
 import progressRoutes from './routes/progress.js';
 import quizRoutes from './routes/quizzes.js';
+import seedRoutes from './routes/seed.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -26,6 +27,7 @@ app.use('/api/courses/:courseId/lessons', lessonRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/courses/:courseId/quizzes', quizRoutes);
+app.use('/api/seed', seedRoutes);
 
 const frontendPath = path.join(__dirname, '..', 'client', 'dist');
 app.use(express.static(frontendPath));

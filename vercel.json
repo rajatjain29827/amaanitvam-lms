@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "client/dist",
   "functions": {
     "api/index.js": {
       "memory": 256,
