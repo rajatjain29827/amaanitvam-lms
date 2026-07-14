@@ -12,7 +12,6 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import QuizPage from './pages/QuizPage';
 import Profile from './pages/Profile';
-import SeedPage from './pages/SeedPage';
 
 export default function App() {
   return (
@@ -25,7 +24,6 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/seed" element={<SeedPage />} />
               <Route path="/courses" element={<CourseList />} />
               <Route path="/courses/:id" element={<CourseDetail />} />
               <Route
